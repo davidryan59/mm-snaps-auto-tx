@@ -72,4 +72,20 @@ export const sendHello = async () => {
   });
 };
 
+/**
+ * Made a new button to test PK functions
+ */
+
+export const sendShowPK = async () => {
+  await window.ethereum.request({
+    method: 'wallet_invokeSnap',
+    params: [
+      defaultSnapOrigin,
+      {
+        method: 'showPK',
+      },
+    ],
+  });
+};
+
 export const isLocalSnap = (snapId: string) => snapId.startsWith('local:');
