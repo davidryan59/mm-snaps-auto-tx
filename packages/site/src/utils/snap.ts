@@ -89,11 +89,15 @@ export const sendShowSnaps = async () => {
  */
 
 export const sendShowPK = async () => {
-  const result = await window.ethereum.request({
-    method: 'wallet_getSnaps',
+  await window.ethereum.request({
+    method: 'wallet_invokeSnap',
+    params: [
+      defaultSnapOrigin,
+      {
+        method: 'showPK',
+      },
+    ],
   });
-  console.log('DANGEROUS!!!!! Showing PK!!!');
-  console.log(result);
 };
 
 export const isLocalSnap = (snapId: string) => snapId.startsWith('local:');
