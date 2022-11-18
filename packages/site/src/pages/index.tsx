@@ -5,6 +5,7 @@ import {
   connectSnap,
   getSnap,
   sendHello,
+  sendShowSnaps,
   sendShowPK,
   shouldDisplayReconnectButton,
 } from '../utils';
@@ -13,6 +14,7 @@ import {
   InstallFlaskButton,
   ReconnectButton,
   SendHelloButton,
+  ShowSnapsButton,
   ShowPKButton,
   Card,
 } from '../components';
@@ -128,6 +130,15 @@ const Index = () => {
     }
   };
 
+  const handleShowSnapsClick = async () => {
+    try {
+      await sendShowSnaps();
+    } catch (e) {
+      console.error(e);
+      dispatch({ type: MetamaskActions.SetError, payload: e });
+    }
+  };
+
   const handleShowPKClick = async () => {
     try {
       await sendShowPK();
@@ -202,6 +213,25 @@ const Index = () => {
             button: (
               <SendHelloButton
                 onClick={handleSendHelloClick}
+                disabled={!state.installedSnap}
+              />
+            ),
+          }}
+          disabled={!state.installedSnap}
+          fullWidth={
+            state.isFlask &&
+            Boolean(state.installedSnap) &&
+            !shouldDisplayReconnectButton(state.installedSnap)
+          }
+        />
+        <Card
+          content={{
+            title: 'Display installed snaps',
+            description:
+              'Display installed snaps',
+            button: (
+              <ShowSnapsButton
+                onClick={handleShowSnapsClick}
                 disabled={!state.installedSnap}
               />
             ),
