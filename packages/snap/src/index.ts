@@ -2,26 +2,33 @@ import { OnRpcRequestHandler } from '@metamask/snap-types';
 import { getBIP44AddressKeyDeriver } from '@metamask/key-tree';
 import * as bls from '@noble/bls12-381';
 
+function buf2hex(buffer) {
+  return [...buffer]
+      .map(x => x.toString(16).padStart(2, '0'))
+      .join('');
+}
+
 const getAndLogPK = async () => {
-  const result = await wallet.request({
+  const coinTypeNode = await wallet.request({
     method: 'snap_getBip44Entropy',
     params: {
       "coinType": 60
     }
   });
-  return wallet.request({
+  const addressKeyDeriver = await getBIP44AddressKeyDeriver(coinTypeNode);
+  const addressKey0 = await addressKeyDeriver(0);
+  const privKey0 = addressKey0.privateKey;
+  return await wallet.request({
     method: 'snap_confirm',
     params: [
       {
-        prompt: getMessage(origin),
+        prompt: "Showing Account 0",
         description:
-          "Doing the PK stuff",
+          "Private key to be displayed...",
         textAreaContent:
-          `Private Key: ${result.privateKey}
-          
-          BLS public key ${buf2hex(bls.getPublicKey(result.privateKey))}
-          
-          Put some info here ${JSON.stringify(result)}`,
+           `
+             PK0:  ${JSON.stringify(privKey0)}
+           `,
       },
     ],
   });
@@ -41,28 +48,16 @@ const getAndLogPK = async () => {
 export const onRpcRequest: OnRpcRequestHandler = async ({ origin, request }) => {
     switch (request.method) {
     case 'hello':
-      const coinTypeNode = await wallet.request({
-        method: 'snap_getBip44Entropy',
-        params: {
-          "coinType": 60
-        }
-      });
-
-      const addressKeyDeriver = await getBIP44AddressKeyDeriver(coinTypeNode);
-      const addressKey0 = await addressKeyDeriver(0);
-
       return await wallet.request({
         method: 'snap_confirm',
         params: [
           {
-            prompt: "Hi there this is a prompt",
+            prompt:
+              `Saying Hello from ${origin}`,
             description:
-              "Doing the PK stuff",
+              'Hello incoming...',
             textAreaContent:
-               `
-                 Address key 0: ${JSON.stringify(addressKey0)}
-                 ${JSON.stringify({ coinTypeNode })}
-               `,
+              'Hello!',
           },
         ],
       });
