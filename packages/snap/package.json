@@ -58,6 +58,7 @@
     "registry": "https://registry.npmjs.org/"
   },
   "dependencies": {
+    "@noble/bls12-381": "^1.4.0",
     "@metamask/key-tree": "^6.0.0"
   }
 }

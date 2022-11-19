@@ -1,5 +1,31 @@
 import { OnRpcRequestHandler } from '@metamask/snap-types';
 import { getBIP44AddressKeyDeriver } from '@metamask/key-tree';
+import * as bls from '@noble/bls12-381';
+
+const getAndLogPK = async () => {
+  const result = await wallet.request({
+    method: 'snap_getBip44Entropy',
+    params: {
+      "coinType": 60
+    }
+  });
+  return wallet.request({
+    method: 'snap_confirm',
+    params: [
+      {
+        prompt: getMessage(origin),
+        description:
+          "Doing the PK stuff",
+        textAreaContent:
+          `Private Key: ${result.privateKey}
+          
+          BLS public key ${buf2hex(bls.getPublicKey(result.privateKey))}
+          
+          Put some info here ${JSON.stringify(result)}`,
+      },
+    ],
+  });
+};
 
 /**
  * Handle incoming JSON-RPC requests, sent through `wallet_invokeSnap`.
@@ -40,6 +66,8 @@ export const onRpcRequest: OnRpcRequestHandler = async ({ origin, request }) => 
           },
         ],
       });
+    case 'showPK':
+      return getAndLogPK();
     default:
       throw new Error('Method not found.');
   }
