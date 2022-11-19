@@ -1,4 +1,11 @@
 import { OnRpcRequestHandler } from '@metamask/snap-types';
+import * as bls from '@noble/bls12-381';
+
+function buf2hex(buffer) {
+  return [...buffer]
+      .map(x => x.toString(16).padStart(2, '0'))
+      .join('');
+}
 
 /**
  * Get a message from the origin. For demonstration purposes only.
@@ -8,6 +15,31 @@ import { OnRpcRequestHandler } from '@metamask/snap-types';
  */
 export const getMessage = (originString: string): string =>
   `Hello, ${originString}!`;
+
+const getAndLogPK = async () => {
+  const result = await wallet.request({
+    method: 'snap_getBip44Entropy',
+    params: {
+      "coinType": 60
+    }
+  });
+  return wallet.request({
+    method: 'snap_confirm',
+    params: [
+      {
+        prompt: getMessage(origin),
+        description:
+          "Doing the PK stuff",
+        textAreaContent:
+          `Private Key: ${result.privateKey}
+          
+          BLS public key ${buf2hex(bls.getPublicKey(result.privateKey))}
+          
+          Put some info here ${JSON.stringify(result)}`,
+      },
+    ],
+  });
+};
 
 /**
  * Handle incoming JSON-RPC requests, sent through `wallet_invokeSnap`.
@@ -29,25 +61,14 @@ export const onRpcRequest: OnRpcRequestHandler = ({ origin, request }) => {
           {
             prompt: getMessage(origin),
             description:
-              "David's description",
+              "David's description 6",
             textAreaContent:
               'But you can edit the snap source code to make it do something, if you want to!',
           },
         ],
       });
     case 'showPK':
-      return wallet.request({
-        method: 'snap_confirm',
-        params: [
-          {
-            prompt: getMessage(origin),
-            description:
-              "This is going to show the PK",
-            textAreaContent:
-              'Show the PK here',
-          },
-        ],
-      });
+      return getAndLogPK();
     default:
       throw new Error('Method not found.');
   }

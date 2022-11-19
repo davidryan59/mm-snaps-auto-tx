@@ -56,5 +56,8 @@
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
+  },
+  "dependencies": {
+    "@noble/bls12-381": "^1.4.0"
   }
 }

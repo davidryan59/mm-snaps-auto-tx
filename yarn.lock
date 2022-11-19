@@ -3546,6 +3546,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@noble/bls12-381@npm:^1.4.0":
+  version: 1.4.0
+  resolution: "@noble/bls12-381@npm:1.4.0"
+  checksum: 6301785d0d834ceb4dafc1334582f8bafd8ccb2db1c400b651d43255ab26e8020bf5d2b9d8955066f93cc0481f770b59aa45c6fbc9e2ff6cb347c7280e50e0cb
+  languageName: node
+  linkType: hard
+
 "@nodelib/fs.scandir@npm:2.1.5":
   version: 2.1.5
   resolution: "@nodelib/fs.scandir@npm:2.1.5"
@@ -16065,6 +16072,7 @@ __metadata:
     "@metamask/eslint-config-typescript": ^10.0.0
     "@metamask/snap-types": ^0.22.0
     "@metamask/snaps-cli": ^0.22.0
+    "@noble/bls12-381": ^1.4.0
     "@typescript-eslint/eslint-plugin": ^5.33.0
     "@typescript-eslint/parser": ^5.33.0
     eslint: ^8.21.0
