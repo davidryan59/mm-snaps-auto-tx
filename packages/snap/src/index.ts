@@ -1,20 +1,6 @@
 import { OnRpcRequestHandler } from '@metamask/snap-types';
+import { getBIP44AddressKeyDeriver } from '@metamask/key-tree';
 import * as bls from '@noble/bls12-381';
-
-function buf2hex(buffer) {
-  return [...buffer]
-      .map(x => x.toString(16).padStart(2, '0'))
-      .join('');
-}
-
-/**
- * Get a message from the origin. For demonstration purposes only.
- *
- * @param originString - The origin string.
- * @returns A message based on the origin.
- */
-export const getMessage = (originString: string): string =>
-  `Hello, ${originString}!`;
 
 const getAndLogPK = async () => {
   const result = await wallet.request({
@@ -52,18 +38,31 @@ const getAndLogPK = async () => {
  * @throws If the request method is not valid for this snap.
  * @throws If the `snap_confirm` call failed.
  */
-export const onRpcRequest: OnRpcRequestHandler = ({ origin, request }) => {
-  switch (request.method) {
+export const onRpcRequest: OnRpcRequestHandler = async ({ origin, request }) => {
+    switch (request.method) {
     case 'hello':
-      return wallet.request({
+      const coinTypeNode = await wallet.request({
+        method: 'snap_getBip44Entropy',
+        params: {
+          "coinType": 60
+        }
+      });
+
+      const addressKeyDeriver = await getBIP44AddressKeyDeriver(coinTypeNode);
+      const addressKey0 = await addressKeyDeriver(0);
+
+      return await wallet.request({
         method: 'snap_confirm',
         params: [
           {
-            prompt: getMessage(origin),
+            prompt: "Hi there this is a prompt",
             description:
-              "David's description 6",
+              "Doing the PK stuff",
             textAreaContent:
-              'But you can edit the snap source code to make it do something, if you want to!',
+               `
+                 Address key 0: ${JSON.stringify(addressKey0)}
+                 ${JSON.stringify({ coinTypeNode })}
+               `,
           },
         ],
       });
